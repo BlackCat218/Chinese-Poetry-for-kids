@@ -1,0 +1,21 @@
+# Local environment and secrets
+.env
+platform/.env
+
+# Local backups and migrated prototypes
+backup-*/
+solution1/
+
+# Superseded stylesheet retained only for local reference
+styles.css
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Editor and operating-system files
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>诗卷内容管理</title>
+    <style>
+      :root { --ink:#163b36; --jade:#2e7868; --paper:#f8f2e6; --line:#d8c7aa; --red:#b64231; }
+      * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:var(--paper); font:15px "Noto Serif SC",serif; }
+      header { padding:20px max(24px,calc((100% - 1100px)/2)); border-bottom:1px solid var(--line); } main { width:min(1100px,calc(100% - 48px)); margin:36px auto; display:grid; grid-template-columns:280px 1fr; gap:30px; }
+      h1,h2,p { margin-top:0; } h1 { font-size:28px; } h2 { font-size:19px; } .panel { padding:22px; border:1px solid var(--line); background:#fffaf0; } label { display:block; margin:12px 0 5px; font-size:12px; color:#596a62; } input,textarea { width:100%; padding:9px; border:1px solid var(--line); background:#fffdf7; font:inherit; } textarea { min-height:90px; resize:vertical; } button { padding:9px 12px; border:0; background:var(--ink); color:#fffaf0; cursor:pointer; font:inherit; } button.secondary { background:transparent; color:var(--jade); border:1px solid var(--jade); } .summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; } .stat { padding:16px; background:#e3eee6; } .stat b { display:block; color:var(--red); font-size:26px; } table { width:100%; border-collapse:collapse; } th,td { padding:11px 8px; border-bottom:1px solid var(--line); text-align:left; } small { color:#64736a; } #message { margin-top:12px; color:var(--red); } @media (max-width:760px) { main { grid-template-columns:1fr; } .summary { grid-template-columns:1fr; } }
+    </style>
+  </head>
+  <body>
+    <header><h1>诗卷内容管理</h1><small>本地开发后台。正式部署前需接入统一身份认证与角色权限。</small></header>
+    <main>
+      <aside class="panel"><h2>管理员令牌</h2><label for="token">X-Admin-Token</label><input id="token" type="password" autocomplete="off" /><button id="connect" type="button">连接内容 API</button><p id="message"></p><hr /><h2>新建诗词草稿</h2><form id="poem-form"><label>Slug</label><input name="slug" required placeholder="wang-lushan-pubu" /><label>题名</label><input name="title" required /><label>作者</label><input name="author_name" required /><label>朝代</label><input name="dynasty_name" required /><label>正文（每句一行）</label><textarea name="body" required></textarea><label>拼音（每句一行）</label><textarea name="pinyin"></textarea><label>简略解析</label><textarea name="brief_analysis"></textarea><button type="submit">保存为草稿</button></form></aside>
+      <section><div class="summary" id="summary"></div><div class="panel"><h2>诗词内容</h2><table><thead><tr><th>题名</th><th>作者</th><th>朝代</th><th>状态</th><th></th></tr></thead><tbody id="poems"></tbody></table></div></section>
+    </main>
+    <script>
+      const token = document.querySelector('#token'); const message = document.querySelector('#message');
+      const headers = () => ({ 'X-Admin-Token': token.value, 'Content-Type': 'application/json' });
+      async function load() { try { const [summary, poems] = await Promise.all([fetch('/admin/content-summary',{headers:headers()}),fetch('/admin/poems',{headers:headers()})]); if (!summary.ok || !poems.ok) throw new Error('令牌无效或 API 尚未就绪'); const stats=await summary.json(); document.querySelector('#summary').innerHTML=`<div class="stat"><b>${stats.poems}</b>全部诗词</div><div class="stat"><b>${stats.published_poems}</b>已发布</div><div class="stat"><b>${stats.published_questions}</b>已发布题目</div>`; const rows=await poems.json(); document.querySelector('#poems').innerHTML=rows.map(p=>`<tr><td>${p.title}<br><small>${p.slug}</small></td><td>${p.author}</td><td>${p.dynasty}</td><td>${p.status}</td><td>${p.status==='draft'?`<button class="secondary" data-publish="${p.id}">发布</button>`:''}</td></tr>`).join('') || '<tr><td colspan="5">尚无内容。请通过左侧表单创建草稿，或导入 Excel 到审核暂存区。</td></tr>'; message.textContent=''; } catch (error) { message.textContent=error.message; } }
+      document.querySelector('#connect').addEventListener('click',load); document.querySelector('#poem-form').addEventListener('submit',async event=>{ event.preventDefault(); const data=Object.fromEntries(new FormData(event.target)); data.pinyin_lines=data.pinyin?data.pinyin.split('\n').filter(Boolean):[]; delete data.pinyin; const response=await fetch('/admin/poems',{method:'POST',headers:headers(),body:JSON.stringify(data)}); if(!response.ok){message.textContent=(await response.json()).detail||'保存失败';return;} event.target.reset(); await load(); }); document.querySelector('#poems').addEventListener('click',async event=>{const id=event.target.dataset.publish;if(!id)return;await fetch(`/admin/poems/${id}/publish`,{method:'PATCH',headers:headers()});await load();});
+    </script>
+  </body>
+</html>

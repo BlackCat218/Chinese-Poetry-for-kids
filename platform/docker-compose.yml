@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-poetry}
+      POSTGRES_USER: ${POSTGRES_USER:-poetry}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-poetry_dev_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - poetry_postgres_data:/var/lib/postgresql/data
+      - ./db/migrations/001_initial.sql:/docker-entrypoint-initdb.d/001_initial.sql:ro
+      - ./db/migrations/002_content_import_staging.sql:/docker-entrypoint-initdb.d/002_content_import_staging.sql:ro
+      - ./db/seeds/001_taxonomy.sql:/docker-entrypoint-initdb.d/002_taxonomy.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-poetry} -d ${POSTGRES_DB:-poetry}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-poetry}:${POSTGRES_PASSWORD:-poetry_dev_password}@postgres:5432/${POSTGRES_DB:-poetry}
+      ADMIN_API_TOKEN: ${ADMIN_API_TOKEN:-change-me-before-sharing}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  poetry_postgres_data:

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="古诗学习、鉴赏与深度练习。" />
+    <title>诗卷 | 古诗学习</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <span class="mark" aria-hidden="true">诗</span><span class="brand-name">诗卷</span>
+        <nav class="nav-list" aria-label="主导航"><button class="active" type="button" data-nav="home">今日鉴赏</button><button type="button" data-nav="shelf">诗词书架</button><button type="button" data-nav="progress">我的学习</button><button type="button" data-nav="collection">我的书架</button></nav>
+        <span class="streak"><b id="streak-count">7</b> 日诗心</span>
+      </header>
+      <main>
+        <section class="page" id="home-view">
+          <div class="home-hero"><div><p class="eyebrow" id="daily-label">今日鉴赏</p><h1 class="hero-heading" id="daily-headline"></h1><p class="hero-summary" id="daily-summary"></p><div class="today-tools"><button class="primary-button" type="button" id="daily-detail-button">开始鉴赏 <span>→</span></button><select class="source-select" id="source-select" aria-label="选择今日诗词库"><option value="all">全部诗库</option><option value="grade">小学必备库</option><option value="extra">课外拓展库</option><option value="advanced">进阶研习库</option></select><button class="refresh-button" type="button" id="refresh-daily">换一首</button></div></div><div class="hero-art"><img id="daily-image" alt="今日诗词意境" /><span class="paper-quote" id="daily-quote"></span><span class="art-title" id="daily-title"></span></div></div>
+          <div class="section-rule"></div>
+          <section aria-labelledby="related-heading"><div class="panel-head"><div><p class="eyebrow">由此及彼</p><h2 id="related-heading">与这首诗一起读</h2><p id="related-subtitle"></p></div><button class="text-button" type="button" data-nav="shelf">浏览全部诗词 →</button></div><div class="related-row" id="home-related"></div></section>
+        </section>
+
+        <section class="page hidden" id="shelf-view">
+          <div class="view-heading"><div><p class="eyebrow">循着线索，找到一卷好诗</p><h1>诗词书架</h1><p>从小学必备到高频题材、体裁与朝代，慢慢读出自己的诗歌地图。</p></div><label class="search-field"><input id="poem-search" placeholder="搜诗名、作者、诗句" aria-label="搜索古诗" /></label></div>
+          <div class="shelf-layout"><aside class="collection-nav" aria-label="诗词分类"><button class="collection-tab active" type="button" data-collection="elementary"><b>小学古诗</b><small>年级分类 · 课外拓展</small></button><button class="collection-tab" type="button" data-collection="theme"><b>高频题材</b><small>山水 · 送别 · 思乡</small></button><button class="collection-tab" type="button" data-collection="history"><b>体裁与朝代</b><small>沿时间轴读诗史</small></button><button class="collection-tab" type="button" data-collection="schools"><b>风格与派系</b><small>诗人 · 主张 · 名篇</small></button><button class="collection-tab" type="button" data-collection="objects"><b>古诗与物</b><small>月亮 · 四季 · 花木</small></button></aside><div class="shelf-content" id="shelf-content"></div></div>
+        </section>
+
+        <section class="page hidden" id="progress-view"><div class="view-heading"><div><p class="eyebrow">留下一点点来过的痕迹</p><h1>我的古诗学习</h1><p>最近学习不超过六首，今天适合温习哪一首？</p></div></div><div class="study-summary"><div class="score-disc"><b id="learned-count">0</b><span>首已完成</span></div><div><p class="eyebrow">本周节奏</p><h2>读一首，懂一句，记一程。</h2><p id="study-overview"></p><button class="primary-button" type="button" data-nav="shelf">继续学诗 <span>→</span></button></div></div><div class="study-list" id="recent-study"></div></section>
+        <section class="page hidden" id="collection-view"><div class="view-heading"><div><p class="eyebrow">完成学习后，收进你的四季</p><h1>我的书架</h1><p>每一首完成深度学习的诗，都将在这里留下一个位置。</p></div></div><div id="collection-content"></div></section>
+
+        <section class="page hidden" id="detail-view"><button class="back-button" type="button" data-nav="shelf">← 返回诗词书架</button><article class="detail-paper" id="detail-paper"><div class="detail-reading"><div class="poem-heading"><p class="eyebrow" id="detail-dynasty"></p><h1 id="detail-title"></h1><p class="meta" id="detail-meta"></p></div><button class="familiarity" id="familiarity-toggle" type="button" aria-label="查看熟悉程度详情" aria-expanded="false"><div><p>熟悉程度</p><strong id="familiarity-label"></strong></div><div class="familiarity-meter"><span id="familiarity-bar"></span></div><small id="familiarity-copy"></small></button><div class="poem-lines" id="detail-lines" aria-label="古诗与拼音"></div><section class="author-note"><h3>作者与时代</h3><p id="detail-author"></p></section><section class="interpretation"><h3>读诗小笺</h3><p id="detail-analysis"></p></section><section class="detail-analysis"><p class="eyebrow">细读一首诗</p><h3>详细解析</h3><p id="detail-deep-analysis"></p><h3>创作背景</h3><p id="detail-background"></p></section><div class="detail-actions"><button class="secondary-button" type="button" id="detail-related">看关联诗词</button><button class="primary-button" type="button" id="start-quiz">深度学习 <span>→</span></button></div></div></article><section><div class="section-rule"></div><div class="panel-head"><div><p class="eyebrow">诗意相连</p><h2>关联古诗联想</h2></div></div><div class="related-row" id="detail-related-list"></div></section></section>
+
+        <section class="page quiz-page hidden" id="quiz-view"><button class="back-button" type="button" id="quiz-back">← 回到诗词解析</button><p class="eyebrow" id="quiz-kicker">深度学习 · 3 题挑战</p><div class="quiz-progress" id="quiz-progress" aria-label="答题进度"></div><article class="question-card"><p class="eyebrow" id="question-number"></p><h1 id="question-title"></h1><div class="answer-list" id="answer-list"></div><p class="feedback" id="quiz-feedback" aria-live="polite"></p><button class="primary-button hidden" id="next-question" type="button">下一题 <span>→</span></button></article></section>
+      </main>
+      <div class="overlay hidden" id="completion-modal" role="dialog" aria-modal="true" aria-labelledby="completion-title"><div class="modal"><p class="eyebrow">深度学习完成</p><h2 id="completion-title">这首诗已经读进心里</h2><p>三道小题全部答对。要把它标记为已学完，并收进你的四季书架吗？</p><div class="modal-actions"><button class="secondary-button" type="button" id="modal-later">稍后再说</button><button class="primary-button" type="button" id="modal-complete">完成并入架</button></div></div></div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
